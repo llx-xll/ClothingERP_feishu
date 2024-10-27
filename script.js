@@ -6,4 +6,5 @@ const output = document.getElementById('output')
 button.addEventListener('click', function () {
   // 在输出元素中显示 "Hello World"
   output.textContent = 'Hello World'
+  alert('Hello World')
 })
