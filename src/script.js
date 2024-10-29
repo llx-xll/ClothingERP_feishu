@@ -1,7 +1,7 @@
 import { bitable } from '@lark-base-open/js-sdk'
 
 document.getElementById('button_1').addEventListener('click', async function () {
-  console.log('button1 clicked   0002')
+  console.log('button1 clicked   0003')
 
   // 1、读取条件表
   const table02a = await bitable.base.getTableByName('02a-产量类型输入')
@@ -14,8 +14,8 @@ document.getElementById('button_1').addEventListener('click', async function () 
     console.log(`allRecords[${i}]=`, allRecords[i])
   }
 
-  const fieldList = await table02a.getFieldList();
-  console.log('fieldList:', fieldList)
+  const field1 = await table02a.getField('产品编号');
+  console.log('field1:', field1)
 
 
   // 2、条件排列组合
