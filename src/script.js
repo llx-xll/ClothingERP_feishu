@@ -1,7 +1,7 @@
 import { bitable } from '@lark-base-open/js-sdk'
 
 document.getElementById('button_1').addEventListener('click', async function () {
-  console.log('button1 clicked   0004')
+  console.log('button1 clicked   0005')
 
   // 1、读取条件表
   const table02a = await bitable.base.getTableByName('02a-产量类型输入')
@@ -77,6 +77,13 @@ document.getElementById('button_1').addEventListener('click', async function () 
   const field_02b_4 = await table02b.getField('尺码');
   const field_02b_5 = await table02b.getField('分包条件');
   const field_02b_6 = await table02b.getField('余数条件');
+  console.log('field_02b_1:', field_02b_1)
+  console.log('field_02b_2:', field_02b_2)
+  console.log('field_02b_3:', field_02b_3)
+  console.log('field_02b_4:', field_02b_4)
+  console.log('field_02b_5:', field_02b_5)
+  console.log('field_02b_6:', field_02b_6)
+
   // 3、输出到订单数量表格
   const recordList = []
   for (let i = 0; i < productIdList.length; i++) {
@@ -84,12 +91,14 @@ document.getElementById('button_1').addEventListener('click', async function () 
       for (let k = 0; k < colorList.length; k++) {
         for (let l = 0; l < sizeList.length; l++) {
           const record = {
-            [field_02b_1.id]: productIdList[i],
-            [field_02b_2.id]: skuIdList[j],
-            [field_02b_3.id]: colorList[k],
-            [field_02b_4.id]: sizeList[l],
-            [field_02b_5.id]: 50,
-            [field_02b_6.id]: 10,
+            fields:{
+              [field_02b_1.id]: productIdList[i],
+              [field_02b_2.id]: skuIdList[j],
+              [field_02b_3.id]: colorList[k],
+              [field_02b_4.id]: sizeList[l],
+              [field_02b_5.id]: 50,
+              [field_02b_6.id]: 10,
+            }
           }
           recordList.push(record)
         }
