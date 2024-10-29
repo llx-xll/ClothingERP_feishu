@@ -4,7 +4,7 @@ document.getElementById('button_1').addEventListener('click', async function () 
   console.log('button1 clicked   0005')
 
   // 1、读取条件表
-  const table02a = await bitable.base.getTableByName('02a-产量类型输入')
+  const table02a = await bitable.base.getTableByName('02a-产量参数')
   console.log('table02a:', table02a)
 
   const field_02a_1 = await table02a.getField('产品编号');
@@ -74,7 +74,7 @@ document.getElementById('button_1').addEventListener('click', async function () 
 
   
   // 3、清空订单数量表
-  const table02b = await bitable.base.getTableByName('02b-订单数量输入')
+  const table02b = await bitable.base.getTableByName('02b-订单数量')
   const t02b_recordIdList = await table02b.getRecordIdList()
   console.log('t02b_recordIdList=', t02b_recordIdList)
   if(t02b_recordIdList.length > 0){
@@ -142,7 +142,7 @@ document.getElementById('button_2').addEventListener('click', async function () 
   console.log('button2 clicked')
 
   // 1、读取输入输出表格
-  const table02b = await bitable.base.getTableByName('02b-订单数量输入')
+  const table02b = await bitable.base.getTableByName('02b-订单数量')
   const table02c = await bitable.base.getTableByName('02c-大货订单')
   const table02d = await bitable.base.getTableByName('02d-任务工单')
 
