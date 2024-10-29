@@ -124,14 +124,14 @@ document.getElementById('button_1').addEventListener('click', async function () 
 // 拆包
 function getBagNum(num, numPerBag, remaindNum){
   const numOfBags = Math.floor(num / numPerBag)
-  const remaindNumOfBags = numOfBags % numPerBag
+  const remaindNumOfBags = num % numPerBag
   const numOfBagsList = []
   for (let i = 0; i < numOfBags; i++) {
     numOfBagsList.push(numPerBag)
   }
   if(remaindNumOfBags > 0){
     if(remaindNumOfBags > remaindNum){ // 余数大于分包条件
-      numOfBagsList.push(remaindNum)
+      numOfBagsList.push(remaindNumOfBags)
     }else{ // 余数小于分包条件
       numOfBagsList[numOfBagsList.length - 1] += remaindNumOfBags // 最后一个包加上余数
     }
@@ -154,6 +154,15 @@ document.getElementById('button_2').addEventListener('click', async function () 
   const field_02b_6 = await table02b.getField('分包条件');
   const field_02b_7 = await table02b.getField('余数条件');
   const field_02b_8 = await table02b.getField('客户名称');
+  console.log('field_02b_1:', field_02b_1.id)
+  console.log('field_02b_2:', field_02b_2.id)
+  console.log('field_02b_3:', field_02b_3.id)
+  console.log('field_02b_4:', field_02b_4.id)
+  console.log('field_02b_5:', field_02b_5.id)
+  console.log('field_02b_6:', field_02b_6.id)
+  console.log('field_02b_7:', field_02b_7.id)
+  console.log('field_02b_8:', field_02b_8.id)
+
 
   const field_02c_1 = await table02c.getField('产品编号');
   const field_02c_2 = await table02c.getField('SKU编号');
