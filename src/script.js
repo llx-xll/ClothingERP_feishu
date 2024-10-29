@@ -28,7 +28,9 @@ document.getElementById('button_1').addEventListener('click', async function () 
   const table02b = await bitable.base.getTableByName('02b-订单数量输入')
   const t02b_recordIdList = await table02b.getRecordIdList()
   console.log('t02b_recordIdList=', t02b_recordIdList)
-  await table02b.deleteRecords(t02b_recordIdList);
+  if(t02b_recordIdList.length > 0){
+    await table02b.deleteRecords(t02b_recordIdList);
+  }
 
   // 3、输出到订单数量表格
   const recordList = []
@@ -49,7 +51,10 @@ document.getElementById('button_1').addEventListener('click', async function () 
       }
     }
   }
-  await table02b.addRecords(recordList)
+  if(recordList.length > 0){
+    await table02b.addRecords(recordList)
+  }
+
 
   alert('第一个功能模块按钮被点击')
 })
