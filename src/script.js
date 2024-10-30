@@ -139,7 +139,9 @@ function getBagNum(num, numPerBag, remaindNum){
   return numOfBagsList
 }
 document.getElementById('button_2').addEventListener('click', async function () {
-  console.log('button2 clicked')
+  console.log('button2 clicked 00')
+  const tableMetaList = await bitable.base.getTableMetaList();
+  console.log("tableMetaList:", tableMetaList)
 
   // 1、读取输入输出表格
   const table02b = await bitable.base.getTableByName('02b-订单数量')
@@ -212,9 +214,15 @@ document.getElementById('button_2').addEventListener('click', async function () 
       console.log(`num=${num}, numPerBag=${numPerBag}, remaindNum=${remaindNum}, numOfBagsList=`, numOfBagsList)
       const recordList = []
       for (let j = 0; j < numOfBagsList.length; j++) {
-        let beizhuStr = "整"
+        let singleSelect = {
+          id: "001",
+          text: "整"
+        }
         if(numOfBagsList[j] !== numPerBag) {
-          beizhuStr = "尾"
+          singleSelect = {
+            id: "002",
+            text: "尾"
+          }
         }
 
         const record = {
@@ -225,9 +233,8 @@ document.getElementById('button_2').addEventListener('click', async function () 
             [field_02d_4.id]: recordFields[field_02b_4.id],  // 尺码
             [field_02d_5.id]: numOfBagsList[j], // 每包数量
             [field_02d_6.id]: j+1, // 包号
-            [field_02d_7.id]: beizhuStr, // 备注
+            [field_02d_7.id]: singleSelect, // 备注
             [field_02d_8.id]: recordFields[field_02b_8.id],  // 客户名称
-
           }
         }
         recordList.push(record)
