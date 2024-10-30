@@ -1,7 +1,7 @@
 import { bitable } from '@lark-base-open/js-sdk'
 
 document.getElementById('button_1').addEventListener('click', async function () {
-  console.log('button1 clicked   0005')
+  console.log('button1 clicked 11')
   const tableMetaList = await bitable.base.getTableMetaList();
   console.log("tableMetaList:", tableMetaList)
   let table02aId = ""
@@ -157,7 +157,7 @@ function getBagNum(num, numPerBag, remaindNum){
 }
 
 document.getElementById('button_2').addEventListener('click', async function () {
-  console.log('button2 clicked')
+  console.log('button2 clicked 11')
 
   const tableMetaList = await bitable.base.getTableMetaList();
   console.log("tableMetaList:", tableMetaList)
