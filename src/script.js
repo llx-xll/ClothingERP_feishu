@@ -2,10 +2,27 @@ import { bitable } from '@lark-base-open/js-sdk'
 
 document.getElementById('button_1').addEventListener('click', async function () {
   console.log('button1 clicked   0005')
+  const tableMetaList = await bitable.base.getTableMetaList();
+  console.log("tableMetaList:", tableMetaList)
+  let table02aId = ""
+  let table02bId = ""
+  for(const tableMeta of tableMetaList){
+    console.log("tableMeta:", tableMeta)
+    const tableName = tableMeta.name
+    const tableId = tableMeta.id
+    if(tableName.startsWith('02a')){
+      table02aId = tableId
+    }
+    if(tableName.startsWith('02b')){
+      table02bId = tableId
+    }
+  }
+  console.log(`table02aId=${table02aId}, table02bId=${table02bId}`)
 
   // 1、读取条件表
-  const table02a = await bitable.base.getTableByName('02a-产量参数')
-  console.log('table02a:', table02a)
+  const table02a = await bitable.base.getTableById(table02aId)
+  const table02b = await bitable.base.getTableById(table02bId)
+
 
   const field_02a_1 = await table02a.getField('产品编号');
   const field_02a_2 = await table02a.getField('SKU编号');
@@ -74,7 +91,7 @@ document.getElementById('button_1').addEventListener('click', async function () 
 
   
   // 3、清空订单数量表
-  const table02b = await bitable.base.getTableByName('02b-订单数量')
+  
   const t02b_recordIdList = await table02b.getRecordIdList()
   console.log('t02b_recordIdList=', t02b_recordIdList)
   if(t02b_recordIdList.length > 0){
@@ -118,7 +135,7 @@ document.getElementById('button_1').addEventListener('click', async function () 
     await table02b.addRecords(recordList)
   }
 
-  alert('已经更新"02b-订单数量输入"表格，请输入订单数量')
+  alert('已经更新"02b"表格，请输入订单数量')
 })
 
 // 拆包
@@ -138,15 +155,35 @@ function getBagNum(num, numPerBag, remaindNum){
   }
   return numOfBagsList
 }
+
 document.getElementById('button_2').addEventListener('click', async function () {
-  console.log('button2 clicked 00')
+  console.log('button2 clicked')
+
   const tableMetaList = await bitable.base.getTableMetaList();
   console.log("tableMetaList:", tableMetaList)
+  let table02bId = ""
+  let table02cId = ""
+  let table02dId = ""
+  for(const tableMeta of tableMetaList){
+    console.log("tableMeta:", tableMeta)
+    const tableName = tableMeta.name
+    const tableId = tableMeta.id
+    if(tableName.startsWith('02b')){
+      table02bId = tableId
+    }
+    if(tableName.startsWith('02c')){
+      table02cId = tableId
+    }
+    if(tableName.startsWith('02d')){
+      table02dId = tableId
+    }
+  }
+  console.log(`table02bId=${table02bId}, table02cId=${table02cId}, table02dId=${table02dId}`)
 
   // 1、读取输入输出表格
-  const table02b = await bitable.base.getTableByName('02b-订单数量')
-  const table02c = await bitable.base.getTableByName('02c-大货订单')
-  const table02d = await bitable.base.getTableByName('02d-任务工单')
+  const table02b = await bitable.base.getTableById(table02bId)
+  const table02c = await bitable.base.getTableById(table02cId)
+  const table02d = await bitable.base.getTableById(table02dId)
 
   const field_02b_1 = await table02b.getField('产品编号');
   const field_02b_2 = await table02b.getField('SKU编号');
@@ -190,8 +227,8 @@ document.getElementById('button_2').addEventListener('click', async function () 
   const allRecords = allRecordsResponse.records
   for (let i = 0; i < allRecords.length; i++) {
     const recordFields = allRecords[i].fields
-    console.log(`recordFields_${i}=`, recordFields)
-    if(recordFields[field_02b_5.id]) {
+    if(recordFields[field_02b_5.id]) { // 如果包含数据
+      console.log(`recordFields_${i}=`, recordFields)
       // 1、copy到订单表达
       await table02c.addRecord({
             fields:{
@@ -214,15 +251,9 @@ document.getElementById('button_2').addEventListener('click', async function () 
       console.log(`num=${num}, numPerBag=${numPerBag}, remaindNum=${remaindNum}, numOfBagsList=`, numOfBagsList)
       const recordList = []
       for (let j = 0; j < numOfBagsList.length; j++) {
-        let singleSelect = {
-          id: "001",
-          text: "整"
-        }
+        let beizhuStr = "整"
         if(numOfBagsList[j] !== numPerBag) {
-          singleSelect = {
-            id: "002",
-            text: "尾"
-          }
+          beizhuStr = "尾"
         }
 
         const record = {
@@ -233,7 +264,7 @@ document.getElementById('button_2').addEventListener('click', async function () 
             [field_02d_4.id]: recordFields[field_02b_4.id],  // 尺码
             [field_02d_5.id]: numOfBagsList[j], // 每包数量
             [field_02d_6.id]: j+1, // 包号
-            [field_02d_7.id]: singleSelect, // 备注
+            [field_02d_7.id]: beizhuStr, // 备注
             [field_02d_8.id]: recordFields[field_02b_8.id],  // 客户名称
           }
         }
@@ -244,5 +275,5 @@ document.getElementById('button_2').addEventListener('click', async function () 
     }
   }
 
-  alert('新订单已加入"02c-大货订单"，分包情况已加入"02d-任务工单"')
+  alert('新订单已加入"02c"，分包情况已加入"02d"')
 })
