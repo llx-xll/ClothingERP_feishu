@@ -47,7 +47,7 @@ function readGongXU(gongXuList){
     return out;
   }
   for(const gongXu of gongXuList){
-    out.push(gongXu)
+    out.push(gongXu.text)
   }
   out.sort();
   return out;
@@ -107,11 +107,14 @@ document.getElementById('button_2').addEventListener('click', async function () 
       // 1、获取一行订单数据：sku、下单数量、分包条件、余数条件、是否分包、工序
       const sku = recordFields[t02_field_sku.id]
       const num = recordFields[t02_field_num.id]
-      const numPerBag = recordFields[t02_field_numPerBag.id]
-      const remaindNum = recordFields[t02_field_remainder.id]
+      let numPerBag = recordFields[t02_field_numPerBag.id]
+      let remaindNum = recordFields[t02_field_remainder.id]
       const isFenBao = recordFields[t02_field_isFenBao.id]
       const gongXu = recordFields[t02_field_gongXu.id]
       const gongXuList = readGongXU(gongXu)
+      console.log("gongXuList:", gongXuList)
+      if(!numPerBag) numPerBag = 50
+      if(!remaindNum) remaindNum = 30
       console.log(`sku=${sku}, num=${num}, numPerBag=${numPerBag}, remaindNum=${remaindNum}, isFenBao=${isFenBao}, gongXuList=${gongXuList}`)
 
       // 2、过滤已经分包的
@@ -131,30 +134,51 @@ document.getElementById('button_2').addEventListener('click', async function () 
         }
       })
 
-      // // 5、追加table03：SKU、每包数量、包号、备注
-      // const recordList03 = []
-      // for (let j = 0; j < numOfBagsList.length; j++) {
-      //   let beizhuStr = "整"
-      //   if(numOfBagsList[j] !== numPerBag) {
-      //     beizhuStr = "尾"
-      //   }
-      //   const record = {
-      //     fields:{
-      //       [t03_field_sku.id]: sku,  // sku
-      //       [t03_field_numInBag.id]: numOfBagsList[j], // 每包数量
-      //       [t03_field_bagIndex.id]: j+1, // 包号
-      //       [t03_field_beizhu.id]: beizhuStr, // 备注
-      //     }
-      //   }
-      //   recordList03.push(record)
-      // }
-      // table03.addRecords(recordList03);
+      // 5、追加table03：SKU、每包数量、包号、备注
+      const recordList03 = []
+      for (let j = 0; j < numOfBagsList.length; j++) {
+        let beizhuStr = {id: t03_field_beizhu_Meta.property.options[0].id}
+        if(numOfBagsList[j] !== numPerBag) {
+          beizhuStr = {id: t03_field_beizhu_Meta.property.options[1].id}
+        }
+        const record03 = {
+          fields:{
+            [t03_field_sku.id]: sku,  // sku
+            [t03_field_numInBag.id]: numOfBagsList[j], // 每包数量
+            [t03_field_bagIndex.id]: j+1, // 包号
+            [t03_field_beizhu.id]: beizhuStr, // 备注
+          }
+        }
+        recordList03.push(record03)
+        
+      }
+      table03.addRecords(recordList03);
 
       // 6、追加table05：SKU、每包数量、包号、备注、工序
+      const recordList05 = []
+      for (let j = 0; j < numOfBagsList.length; j++) {
+        let beizhuStr = {id: t05_field_beizhu_Meta.property.options[0].id}
+        if(numOfBagsList[j] !== numPerBag) {
+          beizhuStr = {id: t05_field_beizhu_Meta.property.options[1].id}
+        }
+        for(const gongXu of gongXuList){
+          // console.log("gongXu:", gongXu)
+          const record05 = {
+            fields:{
+              [t05_field_sku.id]: sku,  // sku
+              [t05_field_numInBag.id]: numOfBagsList[j], // 每包数量
+              [t05_field_bagIndex.id]: j+1, // 包号
+              [t05_field_beizhu.id]: beizhuStr, // 备注
+              [t05_field_gongXu.id]: gongXu, // 工序
+            }
+          }
+          recordList05.push(record05)
+        }
+      }
+      table05.addRecords(recordList05);
 
-    
     }
   }
 
-  alert('新订单已加入"02c"，分包情况已加入"02d"')
+  alert('分包已完成')
 })
