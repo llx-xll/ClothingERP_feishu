@@ -1,142 +1,6 @@
 import { bitable } from '@lark-base-open/js-sdk'
 
-document.getElementById('button_1').addEventListener('click', async function () {
-  console.log('button1 clicked 11')
-  const tableMetaList = await bitable.base.getTableMetaList();
-  console.log("tableMetaList:", tableMetaList)
-  let table02aId = ""
-  let table02bId = ""
-  for(const tableMeta of tableMetaList){
-    console.log("tableMeta:", tableMeta)
-    const tableName = tableMeta.name
-    const tableId = tableMeta.id
-    if(tableName.startsWith('02a')){
-      table02aId = tableId
-    }
-    if(tableName.startsWith('02b')){
-      table02bId = tableId
-    }
-  }
-  console.log(`table02aId=${table02aId}, table02bId=${table02bId}`)
 
-  // 1、读取条件表
-  const table02a = await bitable.base.getTableById(table02aId)
-  const table02b = await bitable.base.getTableById(table02bId)
-
-
-  const field_02a_1 = await table02a.getField('产品编号');
-  const field_02a_2 = await table02a.getField('SKU编号');
-  const field_02a_3 = await table02a.getField('颜色');
-  const field_02a_4 = await table02a.getField('尺码');
-  const field_02a_5 = await table02a.getField('默认分包');
-  const field_02a_6 = await table02a.getField('默认余数');
-  console.log('field_02a_1:', field_02a_1)
-  console.log('field_02a_2:', field_02a_2)
-  console.log('field_02a_3:', field_02a_3)
-  console.log('field_02a_4:', field_02a_4)
-  console.log('field_02a_5:', field_02a_5)
-  console.log('field_02a_6:', field_02a_6)
-
-
-  // const productIdList = ['2221001']
-  // const skuIdList = ['2221001669', '2221001610', '2221001468', '2221001568', '2221001569']
-  // const colorList = ['绿色', '黑灰', '红色', '蓝色']  // 颜色
-  // const sizeList = ['S', 'M', 'L']  // 尺码  
-  const productIdList = []
-  const skuIdList = []
-  const colorList = []  // 颜色
-  const sizeList = []
-  const numPerBagList = []
-  const remaindNumList = []
-  const allRecordsResponse = await table02a.getRecords({ pageSize: 100 })
-  console.log('allRecordsResponse:', allRecordsResponse)
-  const allRecords = allRecordsResponse.records
-  for (let i = 0; i < allRecords.length; i++) {
-    console.log(`allRecords[${i}]=`, allRecords[i])
-    const recordFields = allRecords[i].fields
-    if(recordFields[field_02a_1.id]) {
-      productIdList.push(recordFields[field_02a_1.id][0].text)
-    }
-    if(recordFields[field_02a_2.id]) {
-      skuIdList.push(recordFields[field_02a_2.id][0].text)
-    }
-    if(recordFields[field_02a_3.id]) {
-      colorList.push(recordFields[field_02a_3.id][0].text)
-    }
-    if(recordFields[field_02a_4.id]) {
-      sizeList.push(recordFields[field_02a_4.id][0].text)
-    }
-    if(recordFields[field_02a_5.id]) {
-      numPerBagList.push(recordFields[field_02a_5.id])
-    }
-    if(recordFields[field_02a_6.id]) {
-      remaindNumList.push(recordFields[field_02a_6.id])
-    }
-  }
-  console.log('productIdList=', productIdList)
-  console.log('skuIdList=', skuIdList)  
-  console.log('colorList=', colorList)
-  console.log('sizeList=', sizeList)
-  console.log('numPerBagList=', numPerBagList)
-  console.log('remaindNumList=', remaindNumList)  
-  let numPerBag = 50;
-  let remaindNum = 10;
-  if(numPerBagList.length > 0){
-    numPerBag = numPerBagList[0]
-  }
-  if(remaindNumList.length > 0){
-    remaindNum = remaindNumList[0]
-  }
-
-
-  
-  // 3、清空订单数量表
-  
-  const t02b_recordIdList = await table02b.getRecordIdList()
-  console.log('t02b_recordIdList=', t02b_recordIdList)
-  if(t02b_recordIdList.length > 0){
-    await table02b.deleteRecords(t02b_recordIdList);
-  }
-  const field_02b_1 = await table02b.getField('产品编号');
-  const field_02b_2 = await table02b.getField('SKU编号');
-  const field_02b_3 = await table02b.getField('颜色');
-  const field_02b_4 = await table02b.getField('尺码');
-  const field_02b_5 = await table02b.getField('分包条件');
-  const field_02b_6 = await table02b.getField('余数条件');
-  console.log('field_02b_1:', field_02b_1)
-  console.log('field_02b_2:', field_02b_2)
-  console.log('field_02b_3:', field_02b_3)
-  console.log('field_02b_4:', field_02b_4)
-  console.log('field_02b_5:', field_02b_5)
-  console.log('field_02b_6:', field_02b_6)
-
-  // 3、输出到订单数量表格
-  const recordList = []
-  for (let i = 0; i < productIdList.length; i++) {
-    for (let j = 0; j < skuIdList.length; j++) {
-      for (let k = 0; k < colorList.length; k++) {
-        for (let l = 0; l < sizeList.length; l++) {
-          const record = {
-            fields:{
-              [field_02b_1.id]: productIdList[i],
-              [field_02b_2.id]: skuIdList[j],
-              [field_02b_3.id]: colorList[k],
-              [field_02b_4.id]: sizeList[l],
-              [field_02b_5.id]: numPerBag,
-              [field_02b_6.id]: remaindNum,
-            }
-          }
-          recordList.push(record)
-        }
-      }
-    }
-  }
-  if(recordList.length > 0){
-    await table02b.addRecords(recordList)
-  }
-
-  alert('已经更新"02b"表格，请输入订单数量')
-})
 
 // 拆包
 function getBagNum(num, numPerBag, remaindNum){
@@ -156,122 +20,139 @@ function getBagNum(num, numPerBag, remaindNum){
   return numOfBagsList
 }
 
+// 读取base信息，根据编号获取table id
+async function getTableIdByName(){
+  const tableMetaList = await bitable.base.getTableMetaList();
+  console.log("tableMetaList:", tableMetaList)
+  let out = {};
+  for(const tableMeta of tableMetaList){
+    const tableName = tableMeta.name
+    const tableId = tableMeta.id
+    if(tableName.startsWith('02-大货订单')){
+      out["02"] = tableId
+    }
+    if(tableName.startsWith('03-自动分包')){
+      out["03"] = tableId
+    }
+    if(tableName.startsWith('05-工序任务')){
+      out["05"] = tableId
+    }
+  }
+  return out;
+}
+
+function readGongXU(gongXuList){
+  let out = [];
+  if(!gongXuList){
+    return out;
+  }
+  for(const gongXu of gongXuList){
+    out.push(gongXu)
+  }
+  out.sort();
+  return out;
+}
+
 document.getElementById('button_2').addEventListener('click', async function () {
   console.log('button2 clicked 11')
 
-  const tableMetaList = await bitable.base.getTableMetaList();
-  console.log("tableMetaList:", tableMetaList)
-  let table02bId = ""
-  let table02cId = ""
-  let table02dId = ""
-  for(const tableMeta of tableMetaList){
-    console.log("tableMeta:", tableMeta)
-    const tableName = tableMeta.name
-    const tableId = tableMeta.id
-    if(tableName.startsWith('02b')){
-      table02bId = tableId
-    }
-    if(tableName.startsWith('02c')){
-      table02cId = tableId
-    }
-    if(tableName.startsWith('02d')){
-      table02dId = tableId
-    }
-  }
-  console.log(`table02bId=${table02bId}, table02cId=${table02cId}, table02dId=${table02dId}`)
+  // 1、读取所有表格名称
+  const tableIds = await getTableIdByName();
+  console.log(`tableIds: `, tableIds)
 
-  // 1、读取输入输出表格
-  const table02b = await bitable.base.getTableById(table02bId)
-  const table02c = await bitable.base.getTableById(table02cId)
-  const table02d = await bitable.base.getTableById(table02dId)
+  // 2、读取输入表格数据
+  const table02 = await bitable.base.getTableById(tableIds['02'])
+  const table03 = await bitable.base.getTableById(tableIds['03'])
+  const table05 = await bitable.base.getTableById(tableIds['05'])
 
-  const field_02b_1 = await table02b.getField('产品编号');
-  const field_02b_2 = await table02b.getField('SKU编号');
-  const field_02b_3 = await table02b.getField('颜色');
-  const field_02b_4 = await table02b.getField('尺码');
-  const field_02b_5 = await table02b.getField('数量');
-  const field_02b_6 = await table02b.getField('分包条件');
-  const field_02b_7 = await table02b.getField('余数条件');
-  const field_02b_8 = await table02b.getField('客户名称');
-  console.log('field_02b_1:', field_02b_1.id)
-  console.log('field_02b_2:', field_02b_2.id)
-  console.log('field_02b_3:', field_02b_3.id)
-  console.log('field_02b_4:', field_02b_4.id)
-  console.log('field_02b_5:', field_02b_5.id)
-  console.log('field_02b_6:', field_02b_6.id)
-  console.log('field_02b_7:', field_02b_7.id)
-  console.log('field_02b_8:', field_02b_8.id)
+  const t02_field_sku = await table02.getField('SKU');
+  const t02_field_num = await table02.getField('下单数量');
+  const t02_field_numPerBag = await table02.getField('分包【默认50】');
+  const t02_field_remainder = await table02.getField('余数【默认30】');
+  const t02_field_isFenBao = await table02.getField('已分包');
+  const t02_field_isFenBao_Meta = await t02_field_isFenBao.getMeta();
+  const t02_field_bagNum = await table02.getField('包数');
+  const t02_field_gongXu = await table02.getField('工序');
+  console.log('t02_field_isFenBao_Meta:', t02_field_isFenBao_Meta)
+ 
 
 
-  const field_02c_1 = await table02c.getField('产品编号');
-  const field_02c_2 = await table02c.getField('SKU编号');
-  const field_02c_3 = await table02c.getField('颜色');
-  const field_02c_4 = await table02c.getField('尺码');
-  const field_02c_5 = await table02c.getField('数量');
-  const field_02c_6 = await table02c.getField('分包条件');
-  const field_02c_7 = await table02c.getField('余数条件');
-  const field_02c_8 = await table02c.getField('客户名称');
-
-  const field_02d_1 = await table02d.getField('产品编号');
-  const field_02d_2 = await table02d.getField('SKU编号');
-  const field_02d_3 = await table02d.getField('颜色');
-  const field_02d_4 = await table02d.getField('尺码');
-  const field_02d_5 = await table02d.getField('每包数量');
-  const field_02d_6 = await table02d.getField('包号');
-  const field_02d_7 = await table02d.getField('备注');
-  const field_02d_8 = await table02d.getField('客户名称');
+  const t03_field_sku = await table03.getField('SKU');
+  const t03_field_numInBag = await table03.getField('每包数量');
+  const t03_field_bagIndex = await table03.getField('包号');
+  const t03_field_beizhu = await table03.getField('备注');
+  const t03_field_beizhu_Meta = await t03_field_beizhu.getMeta();
+  console.log('t03_field_beizhu_Meta:', t03_field_beizhu_Meta)
 
 
-  const allRecordsResponse = await table02b.getRecords({ pageSize: 100 })
+  const t05_field_sku = await table05.getField('SKU');
+  const t05_field_numInBag = await table05.getField('每包数量');
+  const t05_field_bagIndex = await table05.getField('包号');
+  const t05_field_beizhu = await table05.getField('备注');
+  const t05_field_beizhu_Meta = await t05_field_beizhu.getMeta();
+  const t05_field_gongXu = await table05.getField('工序');
+  console.log('t05_field_beizhu_Meta:', t05_field_beizhu_Meta)
+
+
+
+  const allRecordsResponse = await table02.getRecords({ pageSize: 100 })
   console.log('allRecordsResponse:', allRecordsResponse)
   const allRecords = allRecordsResponse.records
   for (let i = 0; i < allRecords.length; i++) {
     const recordFields = allRecords[i].fields
-    if(recordFields[field_02b_5.id]) { // 如果包含数据
+    const recordId = allRecords[i].recordId
+    if(recordFields[t02_field_num.id]) { // 如果有下单数量
       console.log(`recordFields_${i}=`, recordFields)
-      // 1、copy到订单表达
-      await table02c.addRecord({
-            fields:{
-              [field_02c_1.id]: recordFields[field_02b_1.id],
-              [field_02c_2.id]: recordFields[field_02b_2.id],
-              [field_02c_3.id]: recordFields[field_02b_3.id],
-              [field_02c_4.id]: recordFields[field_02b_4.id],
-              [field_02c_5.id]: recordFields[field_02b_5.id],
-              [field_02c_6.id]: recordFields[field_02b_6.id],
-              [field_02c_7.id]: recordFields[field_02b_7.id],
-              [field_02c_8.id]: recordFields[field_02b_8.id],
-            }
-          })
 
-      // 2、拆包到任务工单
-      const num = recordFields[field_02b_5.id]
-      const numPerBag = recordFields[field_02b_6.id]
-      const remaindNum = recordFields[field_02b_7.id]
+      // 1、获取一行订单数据：sku、下单数量、分包条件、余数条件、是否分包、工序
+      const sku = recordFields[t02_field_sku.id]
+      const num = recordFields[t02_field_num.id]
+      const numPerBag = recordFields[t02_field_numPerBag.id]
+      const remaindNum = recordFields[t02_field_remainder.id]
+      const isFenBao = recordFields[t02_field_isFenBao.id]
+      const gongXu = recordFields[t02_field_gongXu.id]
+      const gongXuList = readGongXU(gongXu)
+      console.log(`sku=${sku}, num=${num}, numPerBag=${numPerBag}, remaindNum=${remaindNum}, isFenBao=${isFenBao}, gongXuList=${gongXuList}`)
+
+      // 2、过滤已经分包的
+      if(isFenBao && isFenBao.text && isFenBao.text === '是'){
+        continue
+      }
+
+      // 3、计算分包情况
       const numOfBagsList = getBagNum(num, numPerBag, remaindNum)
       console.log(`num=${num}, numPerBag=${numPerBag}, remaindNum=${remaindNum}, numOfBagsList=`, numOfBagsList)
-      const recordList = []
-      for (let j = 0; j < numOfBagsList.length; j++) {
-        let beizhuStr = "整"
-        if(numOfBagsList[j] !== numPerBag) {
-          beizhuStr = "尾"
-        }
 
-        const record = {
-          fields:{
-            [field_02d_1.id]: recordFields[field_02b_1.id],  // 产品编号
-            [field_02d_2.id]: recordFields[field_02b_2.id],  // sku
-            [field_02d_3.id]: recordFields[field_02b_3.id],  // 颜色
-            [field_02d_4.id]: recordFields[field_02b_4.id],  // 尺码
-            [field_02d_5.id]: numOfBagsList[j], // 每包数量
-            [field_02d_6.id]: j+1, // 包号
-            [field_02d_7.id]: beizhuStr, // 备注
-            [field_02d_8.id]: recordFields[field_02b_8.id],  // 客户名称
-          }
+      // 4、修改table02： 是否分包、包数
+      const res = await table02.setRecord(recordId, {
+        fields: {
+          [t02_field_isFenBao.id]: {id: t02_field_isFenBao_Meta.property.options[0].id},
+          [t02_field_bagNum.id]: numOfBagsList.length,
         }
-        recordList.push(record)
-      }
-      table02d.addRecords(recordList);
+      })
 
+      // // 5、追加table03：SKU、每包数量、包号、备注
+      // const recordList03 = []
+      // for (let j = 0; j < numOfBagsList.length; j++) {
+      //   let beizhuStr = "整"
+      //   if(numOfBagsList[j] !== numPerBag) {
+      //     beizhuStr = "尾"
+      //   }
+      //   const record = {
+      //     fields:{
+      //       [t03_field_sku.id]: sku,  // sku
+      //       [t03_field_numInBag.id]: numOfBagsList[j], // 每包数量
+      //       [t03_field_bagIndex.id]: j+1, // 包号
+      //       [t03_field_beizhu.id]: beizhuStr, // 备注
+      //     }
+      //   }
+      //   recordList03.push(record)
+      // }
+      // table03.addRecords(recordList03);
+
+      // 6、追加table05：SKU、每包数量、包号、备注、工序
+
+    
     }
   }
 
